@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flys – Canal de ventas por comisión</title>
+<style>
+  :root{
+    --violet:#6D28D9;
+    --violet-700:#5B21B6;
+    --violet-50:#F5F3FF;
+    --slate-900:#0f172a;
+    --slate-700:#334155;
+    --slate-600:#475569;
+    --slate-500:#64748b;
+    --slate-300:#cbd5e1;
+    --slate-200:#e2e8f0;
+    --white:#fff;
+    --emerald:#10b981;
+    --radius:18px;
+    --radius-lg:22px;
+    --shadow:0 10px 30px rgba(17,17,17,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    color:var(--slate-900);
+    background:linear-gradient(180deg, var(--violet-50), #fff 30%, #fff);
+  }
+  a{color:inherit;text-decoration:none}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:12px 18px;border-radius:16px;border:0;cursor:pointer;
+    background:var(--violet);color:#fff;font-weight:600;box-shadow:var(--shadow);
+    transition:transform .05s ease, background .2s ease;
+  }
+  .btn:hover{background:var(--violet-700)}
+  .btn:active{transform:translateY(1px)}
+  .btn--secondary{background:#f1f5f9;color:var(--slate-900)}
+  .btn--secondary:hover{background:#e2e8f0}
+
+  /* NAV */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(160%) blur(8px);
+    background:rgba(255,255,255,.7);
+    border-bottom:1px solid var(--slate-200);
+  }
+  .nav__row{height:64px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:.6rem;font-weight:700}
+  .brand__logo{
+    width:32px;height:32px;border-radius:12px;background:var(--violet);display:grid;place-content:center;color:#fff;font-size:14px
+  }
+  .nav__links{display:none;gap:20px;font-size:14px}
+  .nav__cta{display:flex;gap:10px}
+  @media (min-width:900px){.nav__links{display:flex}}
+
+  /* HERO */
+  .hero{padding:88px 0}
+  .grid{display:grid;gap:28px}
+  @media (min-width:900px){.grid--2{grid-template-columns:1.1fr .9fr}}
+  .h1{font-size:40px;line-height:1.1;margin:0 0 8px;font-weight:900}
+  @media (min-width:900px){.h1{font-size:54px}}
+  .lead{color:var(--slate-600);font-size:18px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+  .stat{text-align:center}
+  .stat .v{font-size:28px;font-weight:800}
+  .stat .l{font-size:13px;color:var(--slate-500);margin-top:4px}
+  .card{
+    background:#fff;border:1px solid var(--slate-200);border-radius:24px;box-shadow:var(--shadow)
+  }
+  .card__hd{padding:18px 20px;border-bottom:1px solid var(--slate-200);border-top-left-radius:24px;border-top-right-radius:24px}
+  .card__bd{padding:20px}
+
+  .pill{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:var(--violet-50);color:var(--violet-700);
+    padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600
+  }
+
+  /* SECTIONS */
+  .section{padding:76px 0}
+  .h2{font-size:36px;line-height:1.15;margin:0 0 10px;font-weight:900;text-align:center}
+  .muted{color:var(--slate-600);text-align:center;max-width:760px;margin:0 auto}
+  .cards{display:grid;gap:18px}
+  @media (min-width:900px){.cards--3{grid-template-columns:repeat(3,1fr)}.cards--2{grid-template-columns:repeat(2,1fr)}}
+
+  .list{margin:14px 0 0;padding:0 0 0 18px;color:var(--slate-700)}
+  .list li{margin:8px 0}
+
+  .example{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:13px}
+  .codebox{
+    border:1px solid var(--slate-200);border-radius:14px;background:#fff;padding:12px;overflow:auto
+  }
+
+  /* CTA */
+  .cta{
+    background:linear-gradient(90deg, var(--violet), #D946EF);
+    color:#fff;border-radius:26px;padding:28px;box-shadow:var(--shadow)
+  }
+  .cta__grid{display:grid;gap:20px}
+  @media (min-width:900px){.cta__grid{grid-template-columns:1.2fr .8fr}}
+
+  .input{width:100%;padding:12px 14px;border:1px solid var(--slate-300);border-radius:14px;font:inherit}
+  .hint{font-size:12px;color:var(--slate-500)}
+
+  /* Footer */
+  footer{border-top:1px solid var(--slate-200);padding:26px 0;margin-top:50px;font-size:14px;color:var(--slate-600)}
+  .footer__row{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:space-between}
+  @media (min-width:900px){.footer__row{flex-direction:row}}
+
+  /* Simple icons (inline SVG) */
+  .ico{width:18px;height:18px;display:inline-block;vertical-align:-3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="container nav__row">
+    <div class="brand">
+      <div class="brand__logo">★</div>
+      <span>Flys – Canal de Ventas</span>
+    </div>
+    <div class="nav__links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#atribucion">Atribución</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#comision">Comisión</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav__cta">
+      <a class="btn" href="#contacto">Hablar con ventas</a>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container grid grid--2">
+    <div>
+      <span class="pill">
+        <!-- sparkles -->
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 3l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" stroke-width="1.5"/>
+        </svg>
+        Lanzamiento rápido
+      </span>
+      <h1 class="h1">Más ventas para tu tienda online. <span style="color:var(--violet-700)">Sin costos fijos.</span></h1>
+      <p class="lead">Flys crea y distribuye contenido pagado y orgánico para impulsar tus ventas. Solo pagas una <strong>comisión por cada venta atribuida</strong> mediante código o URL única.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+        <a class="btn" href="#comision">Ver comisión</a>
+        <a class="btn btn--secondary" href="#como-funciona">
+          Cómo funciona
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 5l7 7-7 7" stroke-width="1.5"/></svg>
+        </a>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v">Q0</div><div class="l">Costo fijo</div></div>
+        <div class="stat"><div class="v">48 h</div><div class="l">Tiempo de arranque</div></div>
+        <div class="stat"><div class="v">Comisión</div><div class="l">Modelo</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card__hd"><strong>
+          <!-- line chart -->
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M5 15l4-4 4 3 6-7" stroke-width="1.5"/></svg>
+          Proyección de ventas</strong></div>
+        <div class="card__bd">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center">
+            <div><div style="font-size:18px;font-weight:800">+120k</div><div class="l">Alcance</div></div>
+            <div><div style="font-size:18px;font-weight:800">1.9%</div><div class="l">CTR estimado</div></div>
+            <div><div style="font-size:18px;font-weight:800">1.5–3.0%</div><div class="l">Conv. inicial</div></div>
+          </div>
+          <div style="height:150px;margin-top:16px;border-radius:16px;display:grid;place-content:center;color:var(--slate-700);background:linear-gradient(90deg,#DDD6FE,#FBCFE8,#FDE68A)">
+            Tu marca + nuestra distribución = ventas adicionales
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona" class="section">
+  <div class="container">
+    <h2 class="h2">¿Cómo funciona?</h2>
+    <p class="muted">Estrategia, distribución y atribución para que solo pagues por ventas reales.</p>
+    <div class="cards cards--3" style="margin-top:18px">
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 5h18M6 12h12M8 19h8" stroke-width="1.5"/></svg>
+          Estrategia de contenidos</strong></div>
+        <div class="card__bd">Creamos piezas orgánicas y anuncios de alto rendimiento (UGC, reseñas, carruseles, short-form) alineados a tu catálogo.</div>
+      </div>
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16M12 4v16" stroke-width="1.5"/></svg>
+          Distribución multicanal</strong></div>
+        <div class="card__bd">Publicamos en los canales de Flys y ejecutamos pauta en Meta/TikTok/Google para captar demanda con intención de compra.</div>
+      </div>
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 12l3 3 7-7" stroke-width="1.5"/></svg>
+          Venta y atribución</strong></div>
+        <div class="card__bd">Cada compra se atribuye a Flys con un <strong>código</strong> o una <strong>URL única</strong>. Solo pagas por ventas reales.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ATRIBUCION -->
+<section id="atribucion" class="section" style="padding-top:56px">
+  <div class="container">
+    <div class="grid grid--2" style="align-items:start">
+      <div>
+        <h3 class="h2" style="text-align:left">Atribución simple y transparente</h3>
+        <p class="muted" style="text-align:left;margin:0">Dos métodos para asegurar que cada venta se contabilice correctamente:</p>
+        <ul class="list">
+          <li><strong>Código especial</strong>: el cliente lo ingresa en el checkout. Ej.: <span class="pill">FLYS10</span></li>
+          <li><strong>URL única</strong>: enlace con parámetro. Ej.: <span class="pill">/producto-x?src=flys</span></li>
+        </ul>
+        <p class="muted" style="text-align:left;margin-top:10px">Podemos integrarnos con Shopify, WooCommerce o tu checkout propio para registrar la referencia automáticamente.</p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card__hd"><strong>Ejemplo: URL con parámetro</strong></div>
+          <div class="card__bd codebox example">https://tutienda.com/libro-x<strong>?src=flys</strong></div>
+        </div>
+        <div class="card">
+          <div class="card__hd"><strong>Ejemplo: código en checkout</strong></div>
+          <div class="card__bd codebox example">Ingresa el cupón <strong>FLYS</strong> o <strong>FLYS10</strong></div>
+        </div>
+        <div class="card">
+          <div class="card__hd"><strong>Webhook de confirmación (opcional)</strong></div>
+          <div class="card__bd codebox example"><pre style="margin:0">POST /webhooks/venta
+{
+  "order_id": "#12345",
+  "src": "flys",
+  "total": 299.00,
+  "currency": "GTQ"
+}</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section id="beneficios" class="section">
+  <div class="container">
+    <h2 class="h2">Beneficios para tu tienda</h2>
+    <div class="cards cards--3" style="margin-top:18px">
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7" stroke-width="1.5"/></svg>
+          Sin riesgo</strong></div>
+        <div class="card__bd">Q0 de costo fijo. Pagas solo cuando vendes.</div>
+      </div>
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M5 15l4-4 4 3 6-7" stroke-width="1.5"/></svg>
+          Crecimiento medible</strong></div>
+        <div class="card__bd">Reporte de ventas atribuidas en tiempo real.</div>
+      </div>
+      <div class="card">
+        <div class="card__hd"><strong>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l3-7 3 7 3-7 3 7" stroke-width="1.5"/></svg>
+          Go-to-market en 48 h</strong></div>
+        <div class="card__bd">Arranque rápido con piezas listas y media plan inicial.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMISION -->
+<section id="comision" class="section">
+  <div class="container">
+    <div class="grid grid--2" style="align-items:center">
+      <div>
+        <h3 class="h2" style="text-align:left">Comisión por venta</h3>
+        <p class="muted" style="text-align:left">Modelo 100% a éxito. Definimos una comisión sobre el subtotal (sin envío) y solo se factura por ventas atribuidas a Flys.</p>
+        <ul class="list">
+          <li>Sin permanencias.</li>
+          <li>Cancelación cuando quieras.</li>
+          <li>Reporte y factura cada 15 o 30 días.</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#e9d5ff">
+        <div class="card__hd"><strong>Plan único: Solo Comisión</strong></div>
+        <div class="card__bd">
+          <div style="font-size:42px;font-weight:900">% acordado</div>
+          <div class="l">por venta atribuida</div>
+          <ul class="list" style="margin-top:10px">
+            <li>Contenido orgánico + pagado</li>
+            <li>Atribución por código o URL</li>
+            <li>Soporte e integración (Shopify/Woo)</li>
+          </ul>
+          <a class="btn" style="width:100%;margin-top:14px" href="#contacto">Solicitar propuesta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section">
+  <div class="container">
+    <h3 class="h2">Preguntas frecuentes</h3>
+    <div class="cards cards--2" style="margin-top:18px">
+      <div class="card"><div class="card__hd"><strong>¿Cómo se evita la doble atribución?</strong></div><div class="card__bd">Si una orden trae <code>src=flys</code> o el cupón FLYS, la marcamos como venta Flys y la excluimos de otras campañas en el reporte.</div></div>
+      <div class="card"><div class="card__hd"><strong>¿Pueden crear el contenido?</strong></div><div class="card__bd">Sí. Producimos UGC, reseñas y creatividades. También podemos reutilizar tus assets actuales.</div></div>
+      <div class="card"><div class="card__hd"><strong>¿Qué integraciones soportan?</strong></div><div class="card__bd">Shopify, WooCommerce y APIs personalizadas para checkout propio.</div></div>
+      <div class="card"><div class="card__hd"><strong>¿Cuándo se factura?</strong></div><div class="card__bd">Cada 15 o 30 días, según prefieras, con el detalle de ventas atribuidas.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contacto" class="section">
+  <div class="container">
+    <div class="cta">
+      <div class="cta__grid">
+        <div>
+          <div class="pill">Crecimiento sin riesgo</div>
+          <h3 class="h1" style="font-size:34px;margin-top:10px">Más ventas, cero costos fijos</h3>
+          <p style="color:#E9D5FF;margin:6px 0 16px">Conecta tu tienda hoy y empecemos en 48 horas.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn" style="background:#fff;color:var(--violet-700)" href="mailto:ventas@flys.com">
+              <!-- mail -->
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16v12H4zM4 6l8 7 8-7" stroke-width="1.5"/></svg>
+              ventas@flys.com
+            </a>
+            <a class="btn btn--secondary" href="https://wa.me/50200000000" target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+        </div>
+        <div class="card" style="background:#fff;color:var(--slate-900)">
+          <div class="card__hd"><strong>Solicita tu propuesta</strong></div>
+          <div class="card__bd">
+            <form onsubmit="event.preventDefault(); alert('¡Gracias! Te contactaremos pronto.');">
+              <div style="display:grid;gap:10px">
+                <input class="input" placeholder="Nombre de la tienda" required>
+                <input class="input" placeholder="Correo" type="email" required>
+                <input class="input" placeholder="Sitio web / Shopify URL">
+                <textarea class="input" placeholder="Catálogo o categorías clave" rows="3"></textarea>
+                <button class="btn" type="submit">Enviar</button>
+                <div class="hint">*Formulario ilustrativo. Conecta tu propio backend o proveedor de formularios.</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer__row">
+    <div>© <span id="y"></span> Flys. Canal de ventas por comisión.</div>
+    <div style="display:flex;gap:18px">
+      <a href="#atribucion">Atribución</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
