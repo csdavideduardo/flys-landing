@@ -3,225 +3,1200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LYA - IA para E-commerce: Ventas, Insights y Anuncios Automatizados</title>
+    <title>LYA - IA para E-commerce y Panel de Control</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        /* --- ESTILOS DE LA LANDING PAGE --- */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Un fondo base neutro */
         }
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* --- ESTILOS DEL DASHBOARD --- */
+
+        /* Estilos Generales y variables de color */
+        :root {
+            --primary-bg: #f9f9f9; 
+            --sidebar-bg: #2a2a2a; /* Gris oscuro para la barra lateral */
+            --sidebar-text: #cccccc; /* Texto gris claro para contraste */
+            --sidebar-text-hover: #ffffff;
+            --sidebar-active: #f39a08; /* Naranja principal para elementos activos */
+            --main-text: #323457;
+            --secondary-text: #6c757d;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(241, 153, 8, 0.15); /* Sombra con un toque naranja */
+        }
+
+        /* Clase para activar los estilos del cuerpo del dashboard */
+        body.dashboard-active {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--main-text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* Evita el scroll en el body */
+        }
+
+        #dashboard-page {
+             width: 100%;
+             height: 100%;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            flex-shrink: 0;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 25px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--sidebar-text-hover);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            width: 30px;
+            margin-right: 15px;
+        }
+
+        .nav-item span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: #444444;
+            color: var(--sidebar-text-hover);
+        }
+
+        .nav-item.active {
+            background-color: var(--sidebar-active);
+            color: var(--sidebar-text-hover);
+            border-left: 4px solid var(--sidebar-text-hover);
+            padding-left: 21px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+              margin-bottom: 20px;
+        }
+        
+        .main-header h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            color: var(--main-text);
+        }
+
+        .main-header p {
+            font-size: 18px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .content-area {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .btn {
+            background-color: var(--sidebar-active);
+            color: var(--sidebar-text-hover);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .btn.btn-secondary {
+            background-color: #fff8eb;
+            color: var(--sidebar-active);
+            border: 1px solid var(--sidebar-active);
+        }
+
+        .btn:hover {
+            background-color: #d98a07;
+            transform: translateY(-2px);
+        }
+        
+        .btn.btn-secondary:hover {
+            background-color: #fdeccf;
+        }
+        
+        .btn:disabled {
+            background-color: #fdeccf;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Estilos para IA */
+        .ia-feature { margin-top: 20px; }
+        .ia-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
+        .ia-result { margin-top: 20px; padding: 20px; background-color: #fff8eb; border-radius: 6px; white-space: pre-wrap; font-family: monospace; border: 1px solid #fdeccf; }
+        .document-text { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; max-height: 200px; overflow-y: auto; margin-bottom: 20px; }
+        
+        /* ESTILOS BANDEJA DE CHATS */
+        .chat-filters { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .filter-btn { background-color: #f4f2f7; color: var(--secondary-text); border: 1px solid #e0e0e0; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
+        .filter-btn.active, .filter-btn:hover { background-color: var(--sidebar-active); color: var(--sidebar-text-hover); border-color: var(--sidebar-active); }
+        .chat-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f0f2f5; cursor: pointer; transition: background-color 0.2s; }
+        .chat-item:hover { background-color: #fff8eb; }
+        .profile-pic { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; object-fit: cover; flex-shrink: 0; }
+        .chat-details { flex-grow: 1; overflow: hidden; }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px;}
+        .chat-header strong { 
+            font-size: 16px; 
+            color: var(--main-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+        .chat-meta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .attendant-icon { font-size: 14px; color: var(--secondary-text); }
+        .channel-icon { font-size: 18px; }
+        .channel-icon.instagram { color: #E1306C; }
+        .channel-icon.messenger { color: #00B2FF; }
+        .channel-icon.whatsapp { color: #25D366; }
+        .channel-icon.telegram { color: #0088cc; }
+        .channel-icon.email { color: #6c757d; }
+        .chat-message { font-size: 14px; color: var(--secondary-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* VISTA DE CONVERSACIÓN */
+        #conversation-view { display: flex; height: 100%; gap: 20px; }
+        .conversation-main { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+        .conversation-header { display: flex; align-items: center; padding-bottom: 15px; margin-bottom:15px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        .back-btn { background: none; border: none; font-size: 20px; color: var(--secondary-text); cursor: pointer; margin-right: 15px; }
+        .conversation-header .profile-pic { width: 40px; height: 40px; }
+        .conversation-header strong { font-size: 18px; }
+        .conversation-messages { flex-grow: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+        .message { display: flex; max-width: 75%; padding: 10px 15px; border-radius: 18px; line-height: 1.4; }
+        .message.received { background-color: #f0f2f5; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .message.sent { background-color: var(--sidebar-active); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        .conversation-input-area { position: relative; }
+        .conversation-input { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #eee; flex-shrink: 0; }
+        .message-input { flex-grow: 1; border: 1px solid #ddd; border-radius: 20px; padding: 10px 18px; font-size: 15px; }
+        .message-input:focus { outline: none; border-color: var(--sidebar-active); }
+        .send-btn, .input-action-btn { background-color: transparent; color: var(--secondary-text); border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; cursor: pointer; flex-shrink: 0; transition: color 0.2s; }
+        .send-btn { background-color: var(--sidebar-active); color: white; }
+        .input-action-btn:hover { color: var(--sidebar-active); }
+        
+        .emoji-panel, .saved-replies-panel {
+            position: absolute;
+            bottom: calc(100% + 5px);
+            left: 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f0f2f5;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .emoji-panel { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 250px; }
+        .emoji-item { cursor: pointer; font-size: 22px; text-align: center; border-radius: 4px; transition: background-color 0.2s; }
+        .emoji-item:hover { background-color: #f4f2f7; }
+
+        .saved-replies-panel { width: 300px; }
+        .reply-list { list-style: none; padding: 0; margin: 0; }
+        .reply-item { padding: 10px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .reply-item:hover { background-color: #f4f2f7; }
+        .reply-item strong { display: block; color: var(--main-text); }
+        .reply-item span { color: var(--secondary-text); }
+
+
+        /* ESTILOS PARA VISTAS KANBAN Y DRAG & DROP */
+        .view-switcher { display: flex; gap: 5px; background-color: #f4f2f7; border-radius: 8px; padding: 5px; margin-bottom: 20px; }
+        .view-btn { flex-grow: 1; padding: 10px; border: none; background-color: transparent; font-size: 14px; font-weight: 500; color: var(--secondary-text); border-radius: 6px; cursor: pointer; transition: all 0.3s ease; }
+        .view-btn.active { background-color: var(--card-bg); color: var(--sidebar-active); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .kanban-board { display: grid; grid-auto-flow: column; grid-auto-columns: 280px; gap: 20px; overflow-x: auto; padding: 10px; height: 100%; }
+        .kanban-column { background-color: #f4f2f7; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; max-height: 100%; transition: background-color 0.2s ease; }
+        .kanban-column-title { font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }
+        .kanban-cards { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; padding-right: 5px; min-height: 100px; }
+        .kanban-card { background-color: var(--card-bg); border-radius: 6px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); cursor: grab; transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; }
+        .kanban-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .kanban-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .kanban-card-header .user-info { display: flex; align-items: center; }
+        .kanban-card-header .profile-pic { width: 30px; height: 30px; margin-right: 10px; }
+        .kanban-card p { font-size: 14px; color: var(--secondary-text); margin: 0; }
+
+        .kanban-card.dragging { opacity: 0.4; transform: scale(1.05) rotate(3deg); cursor: grabbing; }
+        .kanban-column.drag-over { background-color: #fff8eb; border: 2px dashed var(--sidebar-active); }
+        
+        /* ESTILOS SECCIÓN DE PAGOS */
+        .payment-list { display: flex; flex-direction: column; gap: 2px; }
+        .payment-item { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; padding: 15px; background-color: #fcfbff; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .payment-item:hover { background-color: #f4f2f7; }
+        .payment-item div { display: flex; align-items: center; gap: 10px; }
+        .payment-item .bank-icon { font-size: 20px; }
+        .payment-item .amount { font-weight: 600; color: #28a745; justify-self: end; }
+        #payment-detail-view { padding-top: 20px; }
+        .receipt-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
+        .detail-actions { margin-top: 20px; display: flex; gap: 15px; }
+
+        /* ESTILOS SECCIÓN DE GUÍAS */
+        .guide-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .guide-table th, .guide-table td { text-align: left; padding: 12px 15px; border-bottom: 1px solid #f0f2f5; }
+        .guide-table th { font-size: 14px; color: var(--secondary-text); }
+        .guide-table tbody tr { cursor: pointer; transition: background-color 0.2s; }
+        .guide-table tbody tr:hover { background-color: #fff8eb; }
+        .guide-type-tag { padding: 4px 8px; border-radius: 12px; font-weight: 500; font-size: 12px; }
+        .guide-type-tag.standard { background-color: #e0e7ff; color: #4338ca; }
+        .guide-type-tag.cod { background-color: #d1fae5; color: #065f46; }
+        #guide-detail-view { padding-top: 20px; }
+        .guide-details-grid { display: grid; grid-template-columns: 150px 1fr; gap: 15px; margin-top: 20px; }
+        .guide-details-grid dt { font-weight: 600; color: var(--secondary-text); }
+        .guide-details-grid dd { margin: 0; }
+        .cod-value { color: #28a745; font-weight: bold; }
+
+        /* ESTILOS: TRACKING PANEL */
+        .tracking-panel {
+            width: 280px;
+            flex-shrink: 0;
+            background-color: #f4f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .tracking-panel h4 { margin-top: 0; }
+        .tracking-list { list-style: none; padding: 0; margin: 0; position: relative; }
+        .tracking-list::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+        .tracking-item { display: flex; align-items: center; margin-bottom: 20px; position: relative; }
+        .tracking-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            border: 3px solid var(--card-bg);
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+        .tracking-label { margin-left: 15px; font-weight: 500; color: var(--secondary-text); }
+        
+        .tracking-item.completed .tracking-icon { background-color: var(--sidebar-active); }
+        .tracking-item.completed .tracking-label { color: var(--main-text); }
+
+        .tracking-item.current .tracking-icon {
+            background-color: var(--sidebar-active);
+            transform: scale(1.2);
+        }
+        .tracking-item.current .tracking-label {
+            color: var(--sidebar-active);
+            font-weight: bold;
+        }
+
+        /* ESTILOS: SECCIÓN DE FACTURAS */
+        .invoice-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .invoice-table th, .invoice-table td { text-align: left; padding: 12px 15px; border-bottom: 1px solid #f0f2f5; }
+        .invoice-table tbody tr { cursor: pointer; transition: background-color 0.2s; }
+        .invoice-table tbody tr:hover { background-color: #fff8eb; }
+        
+        .invoice-detail-container { border: 1px solid #eee; border-radius: 8px; padding: 25px; }
+        .invoice-detail-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px;}
+        .invoice-detail-header .logo { font-size: 24px; color: var(--sidebar-bg); }
+        .invoice-detail-header div { text-align: right; }
+        .invoice-client-info { margin: 20px 0; }
+        .invoice-items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .invoice-items-table th, .invoice-items-table td { border: 1px solid #eee; padding: 10px; }
+        .invoice-items-table thead { background-color: #f4f2f7; }
+        .invoice-items-table .total-row { font-weight: bold; }
+
+        /* NUEVOS ESTILOS: ESTUDIO MÁGICO DASHBOARD */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background-color: #fcfbff;
+            border: 1px solid #f0f2f5;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--secondary-text);
+        }
+        .stat-card-header i { color: var(--sidebar-active); }
+        .stat-card-body { margin-top: 15px; }
+        .stat-value { font-size: 32px; font-weight: bold; color: var(--main-text); }
+        .stat-card ul { list-style: none; padding: 0; margin-top: 10px; }
+        .stat-card li { padding: 5px 0; border-bottom: 1px solid #f0f2f5; }
+        .stat-card li:last-child { border-bottom: none; }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800">LYA</h1>
-            <nav class="hidden md:flex space-x-8">
-                <a href="#features" class="text-gray-600 hover:text-indigo-600">Características</a>
-                <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600">¿Cómo funciona?</a>
-                <a href="#pricing" class="text-gray-600 hover:text-indigo-600">Precios</a>
-            </nav>
-            <a href="#contact" class="gradient-bg text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition duration-300">Solicitar Demo</a>
-        </div>
-    </header>
+    <div id="landing-page">
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">LYA</h1>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-indigo-600">Características</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600">¿Cómo funciona?</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-indigo-600">Precios</a>
+                </nav>
+                <a href="#" class="gradient-bg text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition duration-300 js-show-dashboard">Solicitar Demo</a>
+            </div>
+        </header>
 
-    <main class="container mx-auto px-6 py-16 md:py-24 text-center">
-        <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
-            Atiende a tus clientes con IA y descubre en cada chat <span class="text-indigo-600">el secreto para vender más.</span>
-        </h2>
-        <p class="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-            Desde el primer 'hola' en el chat hasta la guía de envío y tu próximo anuncio exitoso, LYA lo automatiza y aprende todo de tu cliente por ti.
-        </p>
-        <div class="mt-10">
-            <a href="#contact" class="gradient-bg text-white font-bold py-4 px-10 rounded-lg text-lg hover:opacity-90 transition duration-300 transform hover:scale-105">
-                Agenda una Demo Gratuita
-            </a>
-        </div>
-    </main>
+        <main class="container mx-auto px-6 py-16 md:py-24 text-center">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
+                Atiende a tus clientes con IA y descubre en cada chat <span class="text-indigo-600">el secreto para vender más.</span>
+            </h2>
+            <p class="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+                Desde el primer 'hola' en el chat hasta la guía de envío y tu próximo anuncio exitoso, LYA lo automatiza y aprende todo de tu cliente por ti.
+            </p>
+            <div class="mt-10">
+                <a href="#" class="gradient-bg text-white font-bold py-4 px-10 rounded-lg text-lg hover:opacity-90 transition duration-300 transform hover:scale-105 js-show-dashboard">
+                    Agenda una Demo Gratuita
+                </a>
+            </div>
+        </main>
 
-    <section id="features" class="bg-white py-20">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h3 class="text-3xl font-bold text-gray-900">Tu centro de operaciones de comercio inteligente</h3>
-                <p class="text-gray-600 mt-2">No solo automatizamos, te damos la inteligencia para crecer.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-                <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-800 mb-2">Chatbot Conversacional 24/7</h4>
-                    <p class="text-gray-600">Responde al instante en WhatsApp, Instagram y Facebook con un tono humano, resolviendo dudas y guiando la compra.</p>
+        <section id="features" class="bg-white py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-gray-900">Tu centro de operaciones de comercio inteligente</h3>
+                    <p class="text-gray-600 mt-2">No solo automatizamos, te damos la inteligencia para crecer.</p>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                     <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Chatbot Conversacional 24/7</h4>
+                        <p class="text-gray-600">Responde al instante en WhatsApp, Instagram y Facebook con un tono humano, resolviendo dudas y guiando la compra.</p>
                     </div>
-                    <h4 class="text-xl font-bold text-gray-800 mb-2">Conocimiento profundo</h4>
-                    <p class="text-gray-600">Transformamos chats en datos. Descubre qué productos agotados te piden, qué combos crear y qué estrategias de venta funcionan mejor.</p>
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                         <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Conocimiento profundo</h4>
+                        <p class="text-gray-600">Transformamos chats en datos. Descubre qué productos agotados te piden, qué combos crear y qué estrategias de venta funcionan mejor.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Flujo de Venta Automatizado</h4>
+                        <p class="text-gray-600">Integramos pasarelas de pago, generamos guías de envío y conciliamos transferencias para un ciclo de venta sin fricciones.</p>
+                    </div>
+                     <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Optimización de Meta Ads</h4>
+                        <p class="text-gray-600">LYA analiza el lenguaje de tus clientes para decirte qué copys, creativos y tonos usar en tus campañas, maximizando tu retorno de inversión publicitaria.</p>
+                    </div>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-800 mb-2">Flujo de Venta Automatizado</h4>
-                    <p class="text-gray-600">Integramos pasarelas de pago, generamos guías de envío y conciliamos transferencias para un ciclo de venta sin fricciones.</p>
-                </div>
-                 <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-800 mb-2">Optimización de Meta Ads</h4>
-                    <p class="text-gray-600">LYA analiza el lenguaje de tus clientes para decirte qué copys, creativos y tonos usar en tus campañas, maximizando tu retorno de inversión publicitaria.</p>
-                </div>
-            </div>
-            <div class="mt-10 bg-indigo-50 p-8 rounded-xl border border-indigo-200 text-center">
-                 <h4 class="text-2xl font-bold text-indigo-800 mb-2">Y próximamente... Generación de Anuncios con IA.</h4>
-                 <p class="text-indigo-700 max-w-3xl mx-auto">LYA detectará oportunidades de venta en tu stock y generará imágenes de producto listas para lanzar en campañas de Meta Ads, todo en tiempo real. Adelántate a la demanda y crea anuncios ganadores antes que nadie.</p>
-            </div>
-        </div>
-    </section>
-    
-    <section id="how-it-works" class="py-20">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h3 class="text-3xl font-bold text-gray-900">Empieza a vender más inteligentemente en 3 pasos</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-                <div>
-                    <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                        <span class="text-3xl font-bold text-white">1</span>
-                    </div>
-                    <h4 class="text-xl font-bold mb-2">Conecta</h4>
-                    <p class="text-gray-600">Vincula tus cuentas de Facebook, Instagram y WhatsApp con LYA en menos de 5 minutos.</p>
-                </div>
-                <div>
-                    <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                        <span class="text-3xl font-bold text-white">2</span>
-                    </div>
-                    <h4 class="text-xl font-bold mb-2">Configura</h4>
-                    <p class="text-gray-600">Entrena a la IA con información de tus productos. Nuestro equipo te ayuda en el proceso.</p>
-                </div>
-                <div>
-                    <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                        <span class="text-3xl font-bold text-white">3</span>
-                    </div>
-                    <h4 class="text-xl font-bold mb-2">Optimiza</h4>
-                    <p class="text-gray-600">Activa el bot y mira cómo las ventas fluyen mientras recibes reportes para optimizar tu negocio y tus anuncios.</p>
+                <div class="mt-10 bg-indigo-50 p-8 rounded-xl border border-indigo-200 text-center">
+                     <h4 class="text-2xl font-bold text-indigo-800 mb-2">Y próximamente... Generación de Anuncios con IA.</h4>
+                     <p class="text-indigo-700 max-w-3xl mx-auto">LYA detectará oportunidades de venta en tu stock y generará imágenes de producto listas para lanzar en campañas de Meta Ads, todo en tiempo real. Adelántate a la demanda y crea anuncios ganadores antes que nadie.</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        
+        <section id="how-it-works" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-gray-900">Empieza a vender más inteligentemente en 3 pasos</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                    <div>
+                        <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+                            <span class="text-3xl font-bold text-white">1</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Conecta</h4>
+                        <p class="text-gray-600">Vincula tus cuentas de Facebook, Instagram y WhatsApp con LYA en menos de 5 minutos.</p>
+                    </div>
+                    <div>
+                        <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+                            <span class="text-3xl font-bold text-white">2</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Configura</h4>
+                        <p class="text-gray-600">Entrena a la IA con información de tus productos. Nuestro equipo te ayuda en el proceso.</p>
+                    </div>
+                    <div>
+                        <div class="gradient-bg w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+                            <span class="text-3xl font-bold text-white">3</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Optimiza</h4>
+                        <p class="text-gray-600">Activa el bot y mira cómo las ventas fluyen mientras recibes reportes para optimizar tu negocio y tus anuncios.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <section id="pricing" class="bg-white py-20">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h3 class="text-3xl font-bold text-gray-900">Un plan para cada etapa de tu negocio</h3>
-                <p class="text-gray-600 mt-2">Escalable, transparente y sin sorpresas.</p>
+        <section id="pricing" class="bg-white py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-gray-900">Un plan para cada etapa de tu negocio</h3>
+                    <p class="text-gray-600 mt-2">Escalable, transparente y sin sorpresas.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <div class="w-full max-w-sm p-8 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold text-center">Emprendedor</h4>
+                        <p class="text-center text-gray-600 mt-2">Para quienes van empezando</p>
+                        <div class="text-center my-6">
+                            <span class="text-5xl font-extrabold">$259</span>
+                            <span class="text-gray-600">/mes</span>
+                        </div>
+                        <ul class="space-y-4 text-gray-700">
+                            <li>✓ 1,225 conversaciones/mes</li>
+                            <li>✓ 1 canal: WhatsApp</li>
+                            <li>✓ Chatbot conversacional con IA</li>
+                            <li>✓ Reportes básicos</li>
+                            <li>✓ Conexión con tu inventario (100 productos)</li>
+                        </ul>
+                        <button class="w-full mt-8 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300">Empezar Ahora</button>
+                    </div>
+                     <div class="w-full max-w-sm p-8 gradient-bg text-white rounded-xl shadow-2xl transform scale-105">
+                        <h4 class="text-2xl font-bold text-center">Negocio</h4>
+                        <p class="text-center opacity-90 mt-2">Para crecer inteligentemente</p>
+                        <div class="text-center my-6">
+                            <span class="text-5xl font-extrabold">$519</span>
+                            <span class="opacity-90">/mes</span>
+                        </div>
+                        <ul class="space-y-4">
+                            <li>✓ 2,250 conversaciones/mes</li>
+                            <li>✓ 3 canales: WhatsApp, Instagram y Messenger</li>
+                            <li>✓ Chatbot conversacional con IA</li>
+                            <li>✓ Reportes avanzados </li>
+                            <li>✓ Pruebas A/B de mensajes </li>
+                            <li>✓ Conexión con tu inventario (Productos ilimitados)</li>
+                        </ul>
+                        <button class="w-full mt-8 bg-white text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100">Elegir Plan Negocio</button>
+                    </div>
+                     <div class="w-full max-w-sm p-8 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold text-center">Empresarial</h4>
+                        <p class="text-center text-gray-600 mt-2">Para operaciones a gran escala</p>
+                        <div class="text-center my-6">
+                            <span class="text-4xl font-extrabold">Hablemos</span>
+                        </div>
+                        <ul class="space-y-4 text-gray-700">
+                            <li>✓ Todo lo que incluye el Plan Negocios</li>
+                            <li>✓ 4,500 Conversaciones</li>
+                            <li>✓ Múltiples agentes</li>
+                            <li>✓ **Generación de Creativos con IA**</li>
+                            <li>✓ Integraciones personalizadas</li>
+                            <li>✓ Soporte dedicado</li>
+                            <li>✓ Conocimiento profundo para Marketing y Logística</li>
+                            <li>✓ Optimización de Meta Ads</li>
+                            <li>✓ Integración con pasarelas de pago</li>
+                            <li>✓ Creación de guias de paquetería automáticas</li>
+                            <li>✓ Consolidaciones bancarias automáticas</li>
+                        </ul>
+                        <button class="w-full mt-8 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300">Contactar a Ventas</button>
+                    </div>
+                </div>
             </div>
-            <div class="flex flex-wrap justify-center gap-8">
-                <div class="w-full max-w-sm p-8 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
-                    <h4 class="text-2xl font-bold text-center">Emprendedor</h4>
-                    <p class="text-center text-gray-600 mt-2">Para quienes van empezando</p>
-                    <div class="text-center my-6">
-                        <span class="text-5xl font-extrabold">$259</span>
-                        <span class="text-gray-600">/mes</span>
-                    </div>
-                    <ul class="space-y-4 text-gray-700">
-                        <li>✓ 1,225 conversaciones/mes</li>
-                        <li>✓ 1 canal: WhatsApp</li>
-                        <li>✓ Chatbot conversacional con IA</li>
-                        <li>✓ Reportes básicos</li>
-                        <li>✓ Conexión con tu inventario (100 productos)</li>
-                    </ul>
-                    <button class="w-full mt-8 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300">Empezar Ahora</button>
-                </div>
-                 <div class="w-full max-w-sm p-8 gradient-bg text-white rounded-xl shadow-2xl transform scale-105">
-                    <h4 class="text-2xl font-bold text-center">Negocio</h4>
-                    <p class="text-center opacity-90 mt-2">Para crecer inteligentemente</p>
-                    <div class="text-center my-6">
-                        <span class="text-5xl font-extrabold">$519</span>
-                        <span class="opacity-90">/mes</span>
-                    </div>
-                    <ul class="space-y-4">
-                        <li>✓ 2,250 conversaciones/mes</li>
-                        <li>✓ 3 canales: WhatsApp, Instagram y Messenger</li>
-                        <li>✓ Chatbot conversacional con IA</li>
-                        <li>✓ Reportes avanzados </li>
-                        <li>✓ Pruebas A/B de mensajes </li>
-                        <li>✓ Conexión con tu inventario (Productos ilimitados)</li>
-                    </ul>
-                    <button class="w-full mt-8 bg-white text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100">Elegir Plan Negocio</button>
-                </div>
-                 <div class="w-full max-w-sm p-8 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
-                    <h4 class="text-2xl font-bold text-center">Empresarial</h4>
-                    <p class="text-center text-gray-600 mt-2">Para operaciones a gran escala</p>
-                    <div class="text-center my-6">
-                        <span class="text-4xl font-extrabold">Hablemos</span>
-                    </div>
-                    <ul class="space-y-4 text-gray-700">
-                        <li>✓ Todo lo que incluye el Plan Negocios</li>
-                        <li>✓ 4,500 Conversaciones</li>
-                        <li>✓ Múltiples agentes</li>
-                        <li>✓ **Generación de Creativos con IA**</li>
-                        <li>✓ Integraciones personalizadas</li>
-                        <li>✓ Soporte dedicado</li>
-                        <li>✓ Conocimiento profundo para Marketing y Logística</li>
-                        <li>✓ Optimización de Meta Ads</li>
-                        <li>✓ Integración con pasarelas de pago</li>
-                        <li>✓ Creación de guias de paquetería automáticas</li>
-                        <li>✓ Consolidaciones bancarias automáticas</li>
-                    </ul>
-                    <button class="w-full mt-8 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300">Contactar a Ventas</button>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="contact" class="py-20">
-        <div class="container mx-auto px-6">
-            <div class="gradient-bg rounded-xl shadow-xl p-10 md:p-16">
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                    <div class="text-white">
-                        <h3 class="text-3xl font-bold">¿Listo para revolucionar tu e-commerce?</h3>
-                        <p class="mt-4 opacity-90">Agenda una demo de 15 minutos sin compromiso. Te mostraremos cómo LYA puede transformar tus operaciones, desde el primer chat hasta tu próxima campaña de anuncios.</p>
+        <section id="contact" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="gradient-bg rounded-xl shadow-xl p-10 md:p-16">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="text-white">
+                            <h3 class="text-3xl font-bold">¿Listo para revolucionar tu e-commerce?</h3>
+                            <p class="mt-4 opacity-90">Agenda una demo de 15 minutos sin compromiso. Te mostraremos cómo LYA puede transformar tus operaciones, desde el primer chat hasta tu próxima campaña de anuncios.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-lg shadow-md">
+                            <form>
+                                <div class="mb-4">
+                                    <label for="name" class="block text-gray-700 font-medium mb-2">Nombre</label>
+                                    <input type="text" id="name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Tu nombre completo">
+                                </div>
+                                 <div class="mb-4">
+                                    <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                                    <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="tu@empresa.com">
+                                </div>
+                                 <div class="mb-6">
+                                    <label for="company" class="block text-gray-700 font-medium mb-2">Nombre de tu Tienda</label>
+                                    <input type="text" id="company" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Mi Tienda Increíble">
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Agendar mi Demo</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="bg-white p-8 rounded-lg shadow-md">
-                        <form>
-                            <div class="mb-4">
-                                <label for="name" class="block text-gray-700 font-medium mb-2">Nombre</label>
-                                <input type="text" id="name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Tu nombre completo">
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-gray-800 text-white py-8">
+            <div class="container mx-auto px-6 text-center">
+                <p>&copy; 2025 LYA Technologies. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="dashboard-page" style="display: none;">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <a href="#" class="logo">
+                        <img src="https://cdn.shopify.com/s/files/1/0694/8097/2606/files/LOGO_LYA_V1.png?v=1757320526" alt="LYA Logo" class="logo-img">
+                        <span>Lya chatea</span>
+                    </a>
+                </div>
+                <nav class="sidebar-nav">
+                    <a class="nav-item active" data-content="chats"><i class="fas fa-comments"></i><span>Chats</span></a>
+                    <a class="nav-item" data-content="pagos"><i class="fas fa-check-circle"></i><span>Pagos Confirmados</span></a>
+                    <a class="nav-item" data-content="guias"><i class="fas fa-book"></i><span>Guías</span></a>
+                    <a class="nav-item" data-content="estudio"><i class="fas fa-wand-magic-sparkles"></i><span>Estudio Mágico</span></a>
+                    <a class="nav-item" data-content="facturas"><i class="fas fa-file-invoice-dollar"></i><span>Facturas</span></a>
+                </nav>
+            </aside>
+
+            <main class="main-content">
+                <header class="main-header">
+                    <h1></h1>
+                    <p></p>
+                </header>
+                <div id="content-area" class="content-area"></div>
+            </main>
+        </div>
+    </div>
+
+
+    <script>
+        // Lógica del Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentArea = document.getElementById('content-area');
+
+            const simulatedConversations = { /* ...código sin cambios... */ };
+            simulatedConversations["Ana Velez"] = [ { from: 'user', text: '¡Hola! Quisiera saber más sobre el plan premium, ¿me podrías dar detalles?' }, { from: 'agent', text: '¡Hola Ana! Claro que sí. Nuestro plan premium incluye análisis ilimitados, soporte prioritario 24/7 y acceso a todas las integraciones. ¿Te interesa alguna característica en particular?' }, { from: 'user', text: 'Suena bien. ¿El soporte es por chat o también por teléfono?' } ];
+            simulatedConversations["Carlos Ruiz"] = [ { from: 'user', text: 'Mi pedido #12345 no ha llegado, ¿podrían verificar el estado?' }, { from: 'agent', text: 'Hola Carlos, permíteme revisar. Veo que tu pedido está en camino y la entrega está programada para mañana antes de las 5 PM. ¿Te gustaría recibir una notificación cuando esté cerca?' }, ];
+            simulatedConversations["Laura Sáenz"] = [ { from: 'user', text: 'Hola, no puedo acceder a mi cuenta.' }, { from: 'agent', text: 'Hola Laura, lamento los inconvenientes. Probemos a restablecer tu contraseña. Te he enviado un enlace a tu correo. ¿Podrías confirmarme si lo recibiste?' }, { from: 'user', text: 'Sí, ya lo recibí y funcionó. ¡Muchas gracias por la ayuda! Problema resuelto.' }, { from: 'agent', text: '¡Excelente! Me alegra haberte ayudado. Que tengas un buen día.' } ];
+            simulatedConversations["Javier Gómez"] = [ { from: 'user', text: 'Consulta sobre facturación: He recibido un cargo doble este mes.' }, { from: 'agent', text: 'Hola Javier, lamento el inconveniente. Estoy revisando tu cuenta ahora mismo para solucionar el cargo duplicado. Te confirmo la anulación en unos momentos.'} ];
+            simulatedConversations["Mariana Peña"] = [ { from: 'user', text: 'Perfecto, la demo fue increíble. Procederemos con la compra.' }, { from: 'agent', text: '¡Fantástico, Mariana! Te envío el enlace de pago ahora mismo. Estamos muy contentos de tenerte a bordo.' } ];
+            
+            let chatUsers = [
+                { name: 'Ana Velez', avatar: 'https://placehold.co/50x50/7A5AF5/FFFFFF?text=AV', message: '¡Hola! Quisiera saber más sobre el plan premium...', channel: 'instagram', status: 'no-atendido', salesStage: 'En consulta', intent: 'Consultando precios', attendedBy: null, trackingStage: 'Consulta' },
+                { name: 'Carlos Ruiz', avatar: 'https://placehold.co/50x50/6a48d7/FFFFFF?text=CR', message: 'Mi pedido #12345 no ha llegado...', channel: 'whatsapp', status: 'atendido', salesStage: 'Enviado', intent: 'Necesita ayuda humana', attendedBy: 'ai', trackingStage: 'Guia creada' },
+                { name: 'Laura Sáenz', avatar: 'https://placehold.co/50x50/413e6c/FFFFFF?text=LS', message: '¡Muchas gracias por la ayuda! Problema resuelto.', channel: 'messenger', status: 'atendido', salesStage: 'Pagado', intent: 'Necesita ayuda humana', attendedBy: 'human', trackingStage: 'Pagado' },
+                { name: 'Javier Gómez', avatar: 'https://placehold.co/50x50/c0b8e0/333333?text=JG', message: 'Consulta sobre facturación: He recibido un cargo doble...', channel: 'email', status: 'no-atendido', salesStage: 'Pendientes de pago', intent: 'Queja', attendedBy: null, trackingStage: 'Pendiente de pago' },
+                { name: 'Mariana Peña', avatar: 'https://placehold.co/50x50/2c2a4a/FFFFFF?text=MP', message: 'Perfecto, la demo fue increíble...', channel: 'telegram', status: 'atendido', salesStage: 'Pagado', intent: 'Consultando precios', attendedBy: 'human', trackingStage: 'Factura creada' },
+            ];
+            
+            const simulatedPayments = [
+                { id: 'TXN789123', userName: 'Laura Sáenz', bank: 'Visa / Banco Industrial', amount: 'Q 1,250.00', receiptImage: 'https://placehold.co/600x400/eee/333?text=Voucher+Digital', type: 'card' },
+                { id: 'TXN101112', userName: 'Ana Velez', bank: 'Mastercard / BAC', amount: 'Q 550.00', receiptImage: 'https://placehold.co/600x400/e0e0e0/333?text=Voucher+Digital', type: 'card' },
+                { id: 'TXN456789', userName: 'Mariana Peña', bank: 'Banrural', amount: 'Q 890.50', receiptImage: 'https://placehold.co/600x800/ddd/333?text=Comprobante+2', type: 'transfer' },
+                { id: 'TXN123456', userName: 'Carlos Ruiz', bank: 'BAC Credomatic', amount: 'Q 350.00', receiptImage: 'https://placehold.co/600x800/ccc/333?text=Comprobante+3', type: 'transfer' },
+                { id: 'TXN131415', userName: 'Javier Gómez', bank: 'Banco G&T', amount: 'Q 210.00', receiptImage: 'https://placehold.co/600x800/c9c9c9/333?text=Comprobante+4', type: 'transfer' },
+            ];
+
+            const simulatedGuides = [
+                { id: 'GUIA-001', clientName: 'Carlos Ruiz', recipientName: 'Carlos Ruiz', phone: '5555-1234', address: 'Av. Las Américas 1-23, Zona 10, Edificio Américas, Apto 5B. Referencia: Portón negro.', email: 'carlos.r@email.com', type: 'Estándar', codValue: 0 },
+                { id: 'GUIA-002', clientName: 'Javier Gómez', recipientName: 'Ana Gómez', phone: '5555-5678', address: 'Calle Real 4-56, Zona 1, Antigua Guatemala. Referencia: Casa de esquina con balcón de flores.', email: 'javier.g@email.com', type: 'COD', codValue: 210.00 },
+                { id: 'GUIA-003', clientName: 'Laura Sáenz', recipientName: 'Laura Sáenz', phone: '5555-9012', address: '4ta Avenida 10-34, Zona 14, Edificio Reforma, Apto 12A. Referencia: Cerca de la plaza.', email: 'laura.s@email.com', type: 'Estándar', codValue: 0 },
+            ];
+
+            const simulatedInvoices = [
+                 { id: 'FAC-001', clientName: 'Mariana Peña', nit: '445566-7', total: 890.50, certNumber: 'A1B2C3D4-E5F6-G7H8-I9J0-K1L2M3N4O5P6', authNumber: '5D69E616-40E1-427A-8A4D-7C3C3D7E8A1D', date: '2025-09-05', items: [{ qty: 1, desc: 'Servicio de Consultoría Premium', price: 795.09, total: 795.09 }], subtotal: 795.09, iva: 95.41 },
+                 { id: 'FAC-002', clientName: 'Laura Sáenz', nit: '123456-7', total: 1250.00, certNumber: 'B2C3D4E5-F6G7-H8I9-J0K1-L2M3N4O5P6Q7', authNumber: '9A8B7C6D-5E4F-3G2H-1I0J-K9L8M7N6O5P4', date: '2025-09-04', items: [{ qty: 2, desc: 'Producto A', price: 500, total: 1000.00 }, { qty: 1, desc: 'Soporte Extendido', price: 250, total: 250.00 }], subtotal: 1116.07, iva: 133.93 },
+                 { id: 'FAC-003', clientName: 'Carlos Ruiz', nit: 'CF', total: 350.00, certNumber: 'C3D4E5F6-G7H8-I9J0-K1L2-M3N4O5P6Q7R8', authNumber: '1Z2Y3X4W-5V6U-7T8S-9R0Q-P1O2N3M4L5K6', date: '2025-09-02', items: [{ qty: 1, desc: 'Producto B', price: 350, total: 350.00 }], subtotal: 312.50, iva: 37.50 },
+            ];
+
+            const headerData = {
+                chats: { title: 'Bandeja de Entrada', subtitle: 'Gestiona todas tus conversaciones en un solo lugar.' },
+                pagos: { title: 'Pagos Confirmados', subtitle: 'Revisa y verifica todas las transacciones.' },
+                guias: { title: 'Guías de Envío', subtitle: 'Administra todas tus guías de envío estándar y COD.' },
+                estudio: { title: 'Estudio Mágico', subtitle: 'Analiza métricas de marketing e inventario con IA.' },
+                facturas: { title: 'Facturas Emitidas', subtitle: 'Consulta y gestiona todas las facturas de tus clientes.' }
+            };
+
+            const contentData = {
+                chats: () => {
+                    // ... (código sin cambios)
+                },
+                pagos: () => {
+                    // ... (código sin cambios)
+                },
+                guias: () => {
+                   // ... (código sin cambios)
+                },
+                estudio: () => {
+                    return `
+                        <div id="studio-views-container">
+                            <div id="studio-main-view">
+                                <div class="view-switcher">
+                                    <button class="view-btn active" data-view="marketing"><i class="fas fa-bullhorn"></i> Marketing Inteligente</button>
+                                    <button class="view-btn" data-view="inventory"><i class="fas fa-boxes-stacked"></i> Inventario Inteligente</button>
+                                </div>
+
+                                <div id="marketing-view">
+                                    <div class="stats-grid">
+                                        <div class="stat-card" data-metric="satisfaction">
+                                            <div class="stat-card-header"><i class="fas fa-smile"></i> Satisfacción del Cliente</div>
+                                            <div class="stat-card-body"><div class="stat-value">92%</div><p>Basado en 1,248 interacciones.</p></div>
+                                        </div>
+                                        <div class="stat-card" data-metric="conversion">
+                                            <div class="stat-card-header"><i class="fas fa-chart-pie"></i> Tasa de Conversión</div>
+                                            <div class="stat-card-body"><div class="stat-value">18%</div><p>Aumento del 3% este mes.</p></div>
+                                        </div>
+                                        <div class="stat-card" data-metric="payment-types">
+                                            <div class="stat-card-header"><i class="fas fa-credit-card"></i> Tipos de Pago Populares</div>
+                                            <div class="stat-card-body"><ul><li>Transferencia (55%)</li><li>Tarjeta de Crédito (40%)</li></ul></div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-card-header"><i class="fas fa-lightbulb"></i> Objeción Más Común</div>
+                                            <div class="stat-card-body"><p>"El costo de envío es muy alto."</p></div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-card-header"><i class="fas fa-shopping-basket"></i> Sugerencias Venta Cruzada</div>
+                                            <div class="stat-card-body"><ul><li>Clientes que compran "Producto A" también compran "Accesorio B".</li></ul></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="inventory-view" style="display: none;">
+                                    <div class="stats-grid">
+                                        <div class="stat-card" data-metric="out-of-stock">
+                                            <div class="stat-card-header"><i class="fas fa-search"></i> Agotados Más Consultados</div>
+                                            <div class="stat-card-body"><ul><li>Producto Z (48 veces)</li><li>Producto Y (31 veces)</li></ul></div>
+                                        </div>
+                                         <div class="stat-card" data-metric="low-stock">
+                                            <div class="stat-card-header"><i class="fas fa-exclamation-triangle"></i> Alta Demanda / Bajo Stock</div>
+                                            <div class="stat-card-body"><ul><li>Producto A (Quedan 5)</li><li>Producto C (Quedan 8)</li></ul></div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-card-header"><i class="fas fa-question-circle"></i> Más Preguntados (No Disponibles)</div>
+                                            <div class="stat-card-body"><ul><li>Modelo X-2025</li><li>Edición Especial</li></ul></div>
+                                        </div>
+                                        <div class="stat-card" data-metric="buyer-persona">
+                                            <div class="stat-card-header"><i class="fas fa-users"></i> Más Vendidos por Buyer Persona</div>
+                                            <div class="stat-card-body"><p><strong>Jóvenes (18-25):</strong> Producto A</p><p><strong>Profesionales (30-45):</strong> Servicio Premium</p></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                             <div class="mb-4">
-                                <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
-                                <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="tu@empresa.com">
+                            <div id="studio-detail-view" style="display: none;"></div>
+                        </div>
+                    `;
+                },
+                facturas: () => {
+                    // ... (código sin cambios)
+                }
+            };
+            contentData.pagos = () => { const cardPayments = simulatedPayments.filter(p => p.type === 'card'); const transferPayments = simulatedPayments.filter(p => p.type === 'transfer'); const generatePaymentList = (payments) => { if (payments.length === 0) return `<p style="padding: 10px;">No hay transacciones de este tipo.</p>`; return payments.map(p => ` <div class="payment-item" data-id="${p.id}"> <div><i class="fas fa-university bank-icon"></i> ${p.bank}</div> <div><i class="fas fa-user"></i> ${p.userName}</div> <div><code>${p.id}</code></div> <div class="amount">${p.amount}</div> </div> `).join(''); }; return ` <div id="payment-views-container"> <div class="view-switcher"> <button class="view-btn active" data-view="card-payments"><i class="fas fa-credit-card"></i> Tarjeta de Crédito</button> <button class="view-btn" data-view="transfer-payments"><i class="fas fa-money-bill-wave"></i> Transferencias</button> </div> <div id="card-payments-view" class="payment-list"> ${generatePaymentList(cardPayments)} </div> <div id="transfer-payments-view" class="payment-list" style="display: none;"> ${generatePaymentList(transferPayments)} </div> </div> <div id="payment-detail-view" style="display: none;"></div> `; };
+            contentData.guias = () => { return ` <div id="guide-list-view"> <table class="guide-table"> <thead> <tr> <th>Tipo Guía</th> <th>Nombre del Cliente</th> <th>Valor COD (Q)</th> </tr> </thead> <tbody> ${simulatedGuides.map(g => ` <tr data-id="${g.id}"> <td><span class="guide-type-tag ${g.type === 'COD' ? 'cod' : 'standard'}">${g.type}</span></td> <td>${g.clientName}</td> <td>${g.type === 'COD' ? `Q ${g.codValue.toFixed(2)}` : 'N/A'}</td> </tr> `).join('')} </tbody> </table> </div> <div id="guide-detail-view" style="display: none;"></div> `; };
+            contentData.facturas = () => { return ` <div id="invoice-list-view"> <table class="invoice-table"> <thead> <tr> <th>No. Factura</th> <th>Nombre</th> <th>NIT</th> <th>Total</th> </tr> </thead> <tbody> ${simulatedInvoices.map(inv => ` <tr data-id="${inv.id}"> <td>${inv.id}</td> <td>${inv.clientName}</td> <td>${inv.nit}</td> <td>Q ${inv.total.toFixed(2)}</td> </tr> `).join('')} </tbody> </table> </div> <div id="invoice-detail-view" style="display: none;"></div> `; };
+            contentData.chats = () => { const salesStages = ['En consulta', 'Pendientes de pago', 'Pagado', 'Empacado', 'Enviado', 'Devolución']; const intents = ['Consultando precios', 'Queja', 'Necesita ayuda humana', 'Consultó producto agotado', 'En objeción']; const generateAttendantIcon = (user) => { if (user.status !== 'atendido') return ''; const iconClass = user.attendedBy === 'ai' ? 'fa-robot' : 'fa-user'; const title = user.attendedBy === 'ai' ? 'Atendido por LYA' : 'Atendido por Humano'; return `<i class="fas ${iconClass} attendant-icon" title="${title}"></i>`; }; const generateChannelIcon = (user) => { const channel = user.channel; const title = channel.charAt(0).toUpperCase() + channel.slice(1); if (channel === 'email') { return `<i class="fas fa-envelope channel-icon email" title="${title}"></i>`; } else if (channel === 'messenger') { return `<i class="fab fa-facebook-messenger channel-icon messenger" title="${title}"></i>`; } return `<i class="fab fa-${channel} channel-icon ${channel}" title="${title}"></i>`; }; const generateKanbanColumns = (stages, users, type) => stages.map(stage => ` <div class="kanban-column" data-stage="${stage}"> <div class="kanban-column-title">${stage}</div> <div class="kanban-cards"> ${users.filter(user => (type === 'sales' ? user.salesStage : user.intent) === stage).map(user => ` <div class="kanban-card" data-user="${user.name}" draggable="true"> <div class="kanban-card-header"> <div class="user-info"> <img src="${user.avatar}" alt="Avatar" class="profile-pic"> <strong>${user.name}</strong> </div> ${generateAttendantIcon(user)} </div> <p>${user.message}</p> </div> `).join('')} </div> </div> `).join(''); return ` <div id="chat-views-container"> <div class="view-switcher"> <button class="view-btn active" data-view="inbox"><i class="fas fa-list-ul"></i> Bandeja</button> <button class="view-btn" data-view="sales"><i class="fas fa-funnel-dollar"></i> Ventas</button> <button class="view-btn" data-view="intents"><i class="fas fa-lightbulb"></i> Intenciones</button> </div> <div id="inbox-view"> <div class="chat-filters"> <button class="filter-btn active" data-filter="todos">Todos</button> <button class="filter-btn" data-filter="no-atendido">No Atendidos</button> <button class="filter-btn" data-filter="atendido">Atendidos</button> </div> <ul class="chat-list"> ${chatUsers.map(user => ` <li class="chat-item" data-status="${user.status}" data-user="${user.name}"> <img src="${user.avatar}" alt="Avatar" class="profile-pic"> <div class="chat-details"> <div class="chat-header"> <strong>${user.name}</strong> <div class="chat-meta"> ${generateAttendantIcon(user)} ${generateChannelIcon(user)} </div> </div> <p class="chat-message">${user.message}</p> </div> </li> `).join('')} </ul> </div> <div id="sales-pipeline-view" class="kanban-board" style="display: none;"> ${generateKanbanColumns(salesStages, chatUsers, 'sales')} </div> <div id="intent-view" class="kanban-board" style="display: none;"> ${generateKanbanColumns(intents, chatUsers, 'intent')} </div> </div> <div id="conversation-view" style="display: none;"></div> `; };
+            
+            async function callGeminiAPI(prompt, button, resultElement) {
+                // ... (código sin cambios)
+            }
+            
+            function navigateToConversation(userName) {
+                document.querySelector('.nav-item[data-content="chats"]').click();
+                setTimeout(() => { openConversation(userName); }, 100);
+            }
+
+            function openConversation(userName) {
+                const chatViewsContainer = contentArea.querySelector('#chat-views-container');
+                const conversationView = contentArea.querySelector('#conversation-view');
+                if (!chatViewsContainer || !conversationView) return;
+                const user = chatUsers.find(u => u.name === userName);
+                if (!user) return;
+                
+                const conversation = simulatedConversations[userName] || [];
+                let messagesHtml = conversation.map(msg => `<div class="message ${msg.from === 'user' ? 'received' : 'sent'}">${msg.text}</div>`).join('');
+                
+                const emojis = ['😀', '😂', '😍', '🤔', '👍', '🙏', '🎉', '🔥', '💯', '👋', '❤️', '✅'];
+                const savedReplies = [
+                    { title: 'Saludo', text: '¡Hola! Gracias por contactarnos. ¿En qué podemos ayudarte hoy?'},
+                    { title: 'Agradecimiento', text: '¡Muchas gracias por tu paciencia! Estamos para servirte.'},
+                    { title: 'Transferencia', text: 'Entendido. Te transferiré con un agente humano para que te ayude con tu solicitud.'}
+                ];
+
+                const trackingStages = ['Consulta', 'Pendiente de pago', 'Pagado', 'Guia creada', 'Factura creada'];
+                const currentStageIndex = trackingStages.indexOf(user.trackingStage);
+                const trackingHtml = trackingStages.map((stage, index) => {
+                    let statusClass = '';
+                    if (index < currentStageIndex) statusClass = 'completed';
+                    if (index === currentStageIndex) statusClass = 'current';
+                    return `<li class="tracking-item ${statusClass}"><span class="tracking-icon"></span><span class="tracking-label">${stage}</span></li>`;
+                }).join('');
+
+                conversationView.innerHTML = `
+                    <div class="conversation-main">
+                        <div class="conversation-header">
+                            <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                            <img src="${user.avatar}" alt="Avatar" class="profile-pic">
+                            <strong>${userName}</strong>
+                        </div>
+                        <div class="conversation-messages">${messagesHtml}</div>
+                        <div class="conversation-input-area">
+                            <div class="emoji-panel" style="display: none;">${emojis.map(e => `<span class="emoji-item">${e}</span>`).join('')}</div>
+                            <div class="saved-replies-panel" style="display: none;"><ul class="reply-list">${savedReplies.map(r => `<li class="reply-item" data-text="${r.text}"><strong>${r.title}</strong><span>${r.text}</span></li>`).join('')}</ul></div>
+                            <div class="conversation-input">
+                                <button class="input-action-btn" id="emoji-btn" title="Insertar emoji"><i class="far fa-smile"></i></button>
+                                <button class="input-action-btn" id="saved-reply-btn" title="Respuestas guardadas"><i class="fas fa-bolt"></i></button>
+                                <input type="text" class="message-input" placeholder="Escribe un mensaje...">
+                                <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
                             </div>
-                             <div class="mb-6">
-                                <label for="company" class="block text-gray-700 font-medium mb-2">Nombre de tu Tienda</label>
-                                <input type="text" id="company" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Mi Tienda Increíble">
-                            </div>
-                            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Agendar mi Demo</button>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <div class="tracking-panel">
+                        <h4>Tracking del Cliente</h4>
+                        <ul class="tracking-list">${trackingHtml}</ul>
+                    </div>
+                `;
 
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2025 LYA Technologies. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+                chatViewsContainer.style.display = 'none';
+                conversationView.style.display = 'flex';
+                
+                const messageInput = conversationView.querySelector('.message-input');
+                const emojiPanel = conversationView.querySelector('.emoji-panel');
+                const repliesPanel = conversationView.querySelector('.saved-replies-panel');
+                conversationView.querySelector('#emoji-btn').addEventListener('click', (e) => { e.stopPropagation(); emojiPanel.style.display = emojiPanel.style.display === 'none' ? 'grid' : 'none'; repliesPanel.style.display = 'none'; });
+                conversationView.querySelector('#saved-reply-btn').addEventListener('click', (e) => { e.stopPropagation(); repliesPanel.style.display = repliesPanel.style.display === 'none' ? 'block' : 'none'; emojiPanel.style.display = 'none'; });
+                conversationView.querySelectorAll('.emoji-item').forEach(item => { item.addEventListener('click', () => { messageInput.value += item.textContent; emojiPanel.style.display = 'none'; messageInput.focus(); }); });
+                conversationView.querySelectorAll('.reply-item').forEach(item => { item.addEventListener('click', () => { messageInput.value = item.dataset.text; repliesPanel.style.display = 'none'; messageInput.focus(); }); });
+                document.body.addEventListener('click', () => { if (emojiPanel) emojiPanel.style.display = 'none'; if (repliesPanel) repliesPanel.style.display = 'none'; }, true);
 
+                conversationView.querySelector('.back-btn').addEventListener('click', () => {
+                    conversationView.style.display = 'none';
+                    chatViewsContainer.style.display = 'block';
+                });
+            }
+
+            function setupInteractiveElements(contentKey) {
+                 if (contentKey === 'chats') {
+                     const chatViewsContainer = document.getElementById('chat-views-container');
+                     if (!chatViewsContainer) return;
+                     const viewButtons = chatViewsContainer.querySelectorAll('.view-switcher .view-btn');
+                    const views = { inbox: chatViewsContainer.querySelector('#inbox-view'), sales: chatViewsContainer.querySelector('#sales-pipeline-view'), intents: chatViewsContainer.querySelector('#intent-view') };
+                     viewButtons.forEach(button => {
+                         button.addEventListener('click', () => {
+                             viewButtons.forEach(btn => btn.classList.remove('active'));
+                             button.classList.add('active');
+                             const viewToShow = button.dataset.view;
+                             Object.values(views).forEach(view => { if(view) view.style.display = 'none' });
+                             if(views[viewToShow]) views[viewToShow].style.display = viewToShow === 'inbox' ? 'block' : 'grid';
+                         });
+                     });
+                     document.querySelectorAll('.filter-btn').forEach(button => {
+                         button.addEventListener('click', () => {
+                             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                             button.classList.add('active');
+                             const filter = button.dataset.filter;
+                             document.querySelectorAll('.chat-item').forEach(item => {
+                                 item.style.display = (filter === 'todos' || item.dataset.status === filter) ? 'flex' : 'none';
+                             });
+                         });
+                     });
+                     document.querySelectorAll('.chat-item, .kanban-card').forEach(item => {
+                         item.addEventListener('click', (e) => { if (!e.target.closest('.attendant-icon')) { openConversation(item.dataset.user); } });
+                     });
+                     const cards = document.querySelectorAll('.kanban-card');
+                     const columns = document.querySelectorAll('.kanban-column');
+                     cards.forEach(card => { 
+                         card.addEventListener('dragstart', () => card.classList.add('dragging'));
+                         card.addEventListener('dragend', () => card.classList.remove('dragging'));
+                     });
+                     columns.forEach(column => {
+                          column.addEventListener('dragover', e => { e.preventDefault(); column.classList.add('drag-over'); });
+                         column.addEventListener('dragleave', () => column.classList.remove('drag-over'));
+                         column.addEventListener('drop', e => {
+                             e.preventDefault();
+                             column.classList.remove('drag-over');
+                             const card = document.querySelector('.dragging');
+                             if (card) column.querySelector('.kanban-cards').appendChild(card);
+                         });
+                     });
+                 }
+
+                if (contentKey === 'pagos') {
+                    const paymentViewsContainer = document.getElementById('payment-views-container');
+                    const paymentDetailView = document.getElementById('payment-detail-view');
+                    if(paymentViewsContainer) {
+                        const viewButtons = paymentViewsContainer.querySelectorAll('.view-btn');
+                        const views = {
+                            'card-payments': paymentViewsContainer.querySelector('#card-payments-view'),
+                            'transfer-payments': paymentViewsContainer.querySelector('#transfer-payments-view')
+                        };
+
+                        viewButtons.forEach(button => {
+                            button.addEventListener('click', () => {
+                                viewButtons.forEach(btn => btn.classList.remove('active'));
+                                button.classList.add('active');
+                                const viewToShow = button.dataset.view;
+                                Object.values(views).forEach(view => { if (view) view.style.display = 'none'; });
+                                if (views[viewToShow]) views[viewToShow].style.display = 'block';
+                            });
+                        });
+                    }
+
+                    document.querySelectorAll('.payment-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            const paymentId = item.dataset.id;
+                            const payment = simulatedPayments.find(p => p.id === paymentId);
+                            if (!payment) return;
+
+                            paymentDetailView.innerHTML = `
+                                <button class="back-btn" id="back-to-payments"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+                                <h3>Detalle de Transacción: ${payment.id}</h3>
+                                <p><strong>Cliente:</strong> ${payment.userName} | <strong>Banco:</strong> ${payment.bank} | <strong>Monto:</strong> ${payment.amount}</p>
+                                <div class="detail-actions">
+                                    <button class="btn" id="goto-chat-btn" data-user="${payment.userName}"><i class="fas fa-comment"></i> Ver Conversación</button>
+                                </div>
+                                <img src="${payment.receiptImage}" alt="Comprobante de pago" class="receipt-image">`;
+                            if(paymentViewsContainer) paymentViewsContainer.style.display = 'none';
+                            paymentDetailView.style.display = 'block';
+                            document.getElementById('back-to-payments').addEventListener('click', () => {
+                                paymentDetailView.style.display = 'none';
+                                if(paymentViewsContainer) paymentViewsContainer.style.display = 'block';
+                            });
+                            document.getElementById('goto-chat-btn').addEventListener('click', function() { navigateToConversation(this.dataset.user); });
+                        });
+                    });
+                }
+
+                if (contentKey === 'guias') {
+                    const guideListView = document.getElementById('guide-list-view');
+                    const guideDetailView = document.getElementById('guide-detail-view');
+                    if (!guideListView || !guideDetailView) return;
+
+                    document.querySelectorAll('.guide-table tbody tr').forEach(row => {
+                        row.addEventListener('click', () => {
+                            const guideId = row.dataset.id;
+                            const guide = simulatedGuides.find(g => g.id === guideId);
+                            if (!guide) return;
+                            
+                            let codInfo = guide.type === 'COD' 
+                                ? `<dt>Valor a Cobrar:</dt><dd class="cod-value">Q ${guide.codValue.toFixed(2)}</dd>`
+                                : `<dt>Valor a Cobrar:</dt><dd>N/A</dd>`;
+
+                            guideDetailView.innerHTML = `
+                                <button class="back-btn" id="back-to-guides"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+                                <h3>Detalle de Guía: ${guide.id}</h3>
+                                <dl class="guide-details-grid">
+                                    <dt>Recibe:</dt>
+                                    <dd>${guide.recipientName}</dd>
+                                    <dt>Teléfono:</dt>
+                                    <dd>${guide.phone}</dd>
+                                    <dt>Dirección:</dt>
+                                    <dd>${guide.address}</dd>
+                                    <dt>Correo:</dt>
+                                    <dd>${guide.email}</dd>
+                                    <dt>Tipo de Guía:</dt>
+                                    <dd>${guide.type} (${guide.type === 'COD' ? 'Lleva cobro' : 'No lleva cobro'})</dd>
+                                    ${codInfo}
+                                </dl>
+                                <div class="detail-actions">
+                                    <button class="btn"><i class="fas fa-download"></i> Descargar Guía</button>
+                                    <button class="btn btn-secondary" id="guide-goto-chat-btn" data-user="${guide.clientName}"><i class="fas fa-comment"></i> Ver Chat</button>
+                                </div>
+                            `;
+                            
+                            guideListView.style.display = 'none';
+                            guideDetailView.style.display = 'block';
+
+                            document.getElementById('back-to-guides').addEventListener('click', () => {
+                                guideDetailView.style.display = 'none';
+                                guideListView.style.display = 'block';
+                            });
+
+                            document.getElementById('guide-goto-chat-btn').addEventListener('click', function() {
+                                navigateToConversation(this.dataset.user);
+                            });
+                        });
+                    });
+                }
+
+                if (contentKey === 'estudio') {
+                    const studioViewsContainer = document.getElementById('studio-views-container');
+                    if (!studioViewsContainer) return;
+
+                    const viewButtons = studioViewsContainer.querySelectorAll('.view-btn');
+                    const mainViews = {
+                        marketing: studioViewsContainer.querySelector('#marketing-view'),
+                        inventory: studioViewsContainer.querySelector('#inventory-view')
+                    };
+                    const detailView = studioViewsContainer.querySelector('#studio-detail-view');
+                    const mainStudioView = studioViewsContainer.querySelector('#studio-main-view');
+
+                    viewButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            viewButtons.forEach(btn => btn.classList.remove('active'));
+                            button.classList.add('active');
+                            const viewToShow = button.dataset.view;
+                            Object.values(mainViews).forEach(view => { if(view) view.style.display = 'none'; });
+                            if (mainViews[viewToShow]) mainViews[viewToShow].style.display = 'block';
+                        });
+                    });
+                    
+                    document.querySelectorAll('.stat-card[data-metric]').forEach(card => {
+                        card.addEventListener('click', () => {
+                            const metric = card.dataset.metric;
+                            
+                            mainStudioView.style.display = 'none';
+                            detailView.style.display = 'block';
+                            
+                            const { title, chartType, data, options } = getChartData(metric);
+
+                            detailView.innerHTML = `
+                                <button class="back-btn"><i class="fas fa-arrow-left"></i> Volver al dashboard</button>
+                                <h3>${title}</h3>
+                                <div class="chart-container">
+                                    <canvas id="metricChart"></canvas>
+                                </div>
+                            `;
+                            
+                            const ctx = detailView.querySelector('#metricChart').getContext('2d');
+                            new Chart(ctx, { type: chartType, data: data, options: { responsive: true, maintainAspectRatio: false, ...options } });
+
+                            detailView.querySelector('.back-btn').addEventListener('click', () => {
+                                detailView.style.display = 'none';
+                                mainStudioView.style.display = 'block';
+                            });
+                        });
+                    });
+                }
+
+                 if (contentKey === 'facturas') {
+                    const invoiceListView = document.getElementById('invoice-list-view');
+                    const invoiceDetailView = document.getElementById('invoice-detail-view');
+
+                    document.querySelectorAll('.invoice-table tbody tr').forEach(row => {
+                        row.addEventListener('click', () => {
+                            const invoiceId = row.dataset.id;
+                            const invoice = simulatedInvoices.find(inv => inv.id === invoiceId);
+                            if (!invoice) return;
+
+                            invoiceDetailView.innerHTML = `
+                                <button class="back-btn" id="back-to-invoices"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+                                <div class="invoice-detail-container">
+                                    <div class="invoice-detail-header">
+                                        <div>
+                                            <div class="logo">LYA</div>
+                                            <p>Soluciones Digitales S.A.</p>
+                                        </div>
+                                        <div>
+                                            <h4>FACTURA ${invoice.id}</h4>
+                                            <p><strong>Fecha:</strong> ${invoice.date}</p>
+                                        </div>
+                                    </div>
+                                    <div class="invoice-client-info">
+                                        <strong>Cliente:</strong> ${invoice.clientName}<br>
+                                        <strong>NIT:</strong> ${invoice.nit}
+                                    </div>
+                                    <table class="invoice-items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Cantidad</th>
+                                                <th>Descripción</th>
+                                                <th>Precio Unitario</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${invoice.items.map(item => `
+                                                <tr>
+                                                    <td>${item.qty}</td>
+                                                    <td>${item.desc}</td>
+                                                    <td>Q ${item.price.toFixed(2)}</td>
+                                                    <td>Q ${item.total.toFixed(2)}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="total-row">
+                                                <td colspan="3" style="text-align: right;">Subtotal</td>
+                                                <td>Q ${invoice.subtotal.toFixed(2)}</td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td colspan="3" style="text-align: right;">IVA (12%)</td>
+                                                <td>Q ${invoice.iva.toFixed(2)}</td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td colspan="3" style="text-align: right;">Total</td>
+                                                <td>Q ${invoice.total.toFixed(2)}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <div style="font-size: 10px; color: #888; text-align: center; margin-top: 20px;">
+                                        <p><strong>No. de Certificación:</strong> ${invoice.certNumber}</p>
+                                        <p><strong>No. de Autorización:</strong> ${invoice.authNumber}</p>
+                                    </div>
+                                </div>
+                                <div class="detail-actions">
+                                    <button class="btn"><i class="fas fa-download"></i> Descargar Factura</button>
+                                    <button class="btn btn-secondary" id="invoice-goto-chat-btn" data-user="${invoice.clientName}"><i class="fas fa-comment"></i> Ver Chat</button>
+                                </div>
+                            `;
+                            
+                            invoiceListView.style.display = 'none';
+                            invoiceDetailView.style.display = 'block';
+
+                            document.getElementById('back-to-invoices').addEventListener('click', () => {
+                                invoiceDetailView.style.display = 'none';
+                                invoiceListView.style.display = 'block';
+                            });
+
+                             document.getElementById('invoice-goto-chat-btn').addEventListener('click', function() {
+                                 navigateToConversation(this.dataset.user);
+                            });
+                        });
+                    });
+                 }
+            }
+            
+            function getChartData(metric) {
+                switch(metric) {
+                    case 'satisfaction':
+                        return { title: 'Desglose de Satisfacción del Cliente', chartType: 'doughnut', data: { labels: ['Positivo', 'Neutral', 'Negativo'], datasets: [{ data: [1028, 150, 70], backgroundColor: ['#28a745', '#ffc107', '#dc3545'] }] } };
+                    case 'conversion':
+                        return { title: 'Evolución de la Tasa de Conversión (Últimos 6 Meses)', chartType: 'line', data: { labels: ['Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'], datasets: [{ label: 'Tasa de Conversión %', data: [12, 14, 13, 15, 15, 18], borderColor: 'rgba(241, 153, 8, 1)', tension: 0.1 }] } };
+                    case 'payment-types':
+                        return { title: 'Distribución de Tipos de Pago', chartType: 'pie', data: { labels: ['Transferencia', 'Tarjeta de Crédito', 'COD'], datasets: [{ data: [55, 40, 5], backgroundColor: ['#f19908', '#ffc107', '#6c757d'] }] } };
+                    case 'out-of-stock':
+                        return { title: 'Consultas de Productos Agotados', chartType: 'bar', data: { labels: ['Producto Z', 'Producto Y', 'Producto K'], datasets: [{ label: '# de Consultas', data: [48, 31, 19], backgroundColor: 'rgba(241, 153, 8, 0.7)' }] } };
+                    case 'low-stock':
+                        return { title: 'Niveles de Stock de Productos con Alta Demanda', chartType: 'bar', data: { labels: ['Producto A', 'Producto C', 'Producto H'], datasets: [{ label: 'Unidades Restantes', data: [5, 8, 12], backgroundColor: ['#dc3545', '#ffc107', '#28a745'] }] }, options: { indexAxis: 'y' } };
+                    case 'buyer-persona':
+                        return { title: 'Ventas por Buyer Persona', chartType: 'bar', data: { labels: ['Jóvenes (18-25)', 'Profesionales (30-45)', 'Empresas'], datasets: [{ label: 'Total de Ventas (Q)', data: [12500, 28000, 45000], backgroundColor: ['#f19908', '#d98a07', '#a76405'] }] } };
+                    default:
+                        return {};
+                }
+            }
+            
+            function updateContent(contentKey) {
+                const content = contentData[contentKey];
+                document.querySelector('.main-header h1').textContent = headerData[contentKey]?.title || 'Bienvenido';
+                document.querySelector('.main-header p').textContent = headerData[contentKey]?.subtitle || 'Selecciona una opción del menú para comenzar.';
+                contentArea.innerHTML = typeof content === 'function' ? content() : content;
+                setupInteractiveElements(contentKey);
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    updateContent(this.dataset.content);
+                });
+            });
+
+            // Carga inicial del dashboard (aunque esté oculto)
+            const initialContentKey = document.querySelector('.nav-item.active').dataset.content;
+            updateContent(initialContentKey);
+            
+            // --- LÓGICA PARA CAMBIAR DE LANDING A DASHBOARD ---
+            document.querySelectorAll('.js-show-dashboard').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Previene que el link '#' navegue
+                    
+                    // Ocultar la landing page
+                    document.getElementById('landing-page').style.display = 'none';
+                    
+                    // Mostrar el dashboard
+                    document.getElementById('dashboard-page').style.display = 'block';
+
+                    // Aplicar los estilos de cuerpo necesarios para el dashboard
+                    document.body.classList.add('dashboard-active');
+                    // Para Tailwind, removemos la clase que pone el fondo gris claro
+                    document.body.classList.remove('bg-gray-50'); 
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
